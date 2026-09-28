@@ -209,7 +209,7 @@ async function placeOrder() {
     <template v-else>
       <h1 class="font-serif text-3xl md:text-4xl my-10">Checkout</h1>
 
-      <div class="grid md:grid-cols-3 gap-12">
+      <div class="grid md:grid-cols-3 gap-12 items-start">
         <form class="md:col-span-2 space-y-10" @submit.prevent="placeOrder">
           <!-- Contact Details -->
           <fieldset>
@@ -322,8 +322,8 @@ async function placeOrder() {
           </button>
         </form>
 
-        <!-- Order Summary -->
-        <div class="border border-line rounded-2xl p-6 h-fit bg-white/30 backdrop-blur-sm">
+        <!-- Order Summary (Sticky on scroll) -->
+        <div class="sticky top-24 border border-line rounded-2xl p-6 h-fit bg-white/30 backdrop-blur-sm shadow-sm">
           <h2 class="font-serif text-xl mb-6">Order Summary</h2>
 
           <div v-if="lines.length === 0" class="text-sm text-ink/50 py-4 text-center">Your bag is empty.</div>
