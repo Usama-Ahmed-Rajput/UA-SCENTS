@@ -1,0 +1,26 @@
+{
+  "name": "ua-scents",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@imgly/background-removal": "^1.7.0",
+    "@nuxtjs/supabase": "^1.4.0",
+    "@supabase/supabase-js": "^2.117.2",
+    "@upstash/redis": "^1.38.2",
+    "nuxt": "^3.13.0",
+    "onnxruntime-web": "^1.21.0",
+    "vue": "^3.4.0",
+    "vue-router": "^4.4.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/google-fonts": "^3.2.0",
+    "@nuxtjs/tailwindcss": "^6.12.0"
+  }
+}

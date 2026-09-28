@@ -1,0 +1,45 @@
+{
+  "home": {
+    "title": "UA SCENTS – Scents that take you somewhere.",
+    "description": "UA SCENTS is a world of scents that take you somewhere. Complex, rich and emotional. Familiar but new. Each scent invites new meaning through your own wear, designed inclusive of gender, identity and the things we carry. At our core is the reminder of all that connects us."
+  },
+  "about": {
+    "title": "This is UA SCENTS",
+    "description": "UA SCENTS is a world of scents that take you somewhere. Complex, rich and emotional. Familiar but new.",
+    "image": "/images/Untitled_design3d1d.png"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "description": "Are the fragrances vegan/cruelty free? Our Eau de parfums are vegan, cruelty-free and made with practices that help uphold the 9 million species who share our home. Do we ship outside of the United States? The world is quite large. For now, we ship to the US from uascents.com. With time, we'll bring our Eau de parfums to more of the world.",
+    "items": [
+      {
+        "q": "Are the fragrances vegan/cruelty free?",
+        "a": "Our Eau de parfums are vegan, cruelty-free and made with practices that help uphold the 9 million species who share our home."
+      },
+      {
+        "q": "Do you ship outside of the United States?",
+        "a": "The world is quite large. For now, we ship to the US from uascents.com. With time, we'll bring our Eau de parfums to more of the world."
+      },
+      {
+        "q": "What is your return policy?",
+        "a": "If at any time within 30 days of receipt, you are not happy with the product, we would be more than happy to process a return for you."
+      }
+    ]
+  },
+  "shipping-returns": {
+    "title": "Shipping & Returns",
+    "description": "We offer complimentary ground shipping on all orders. If at any time within 30 days of receipt, you are not happy with the product, we would be more than happy to process a return for you."
+  },
+  "privacy-policy": {
+    "title": "Privacy Policy",
+    "description": "We are committed to protecting your privacy. This Privacy Policy outlines how we collect, use, and safeguard your personal information. By using our website, you consent to the practices described in this policy."
+  },
+  "terms-of-service": {
+    "title": "Terms of Service",
+    "description": "Please read these Terms of Service carefully before accessing or using our website. By accessing or using any part of the site, you agree to be bound by these Terms of Service."
+  },
+  "accessibility": {
+    "title": "Accessibility Statement",
+    "description": "UA SCENTS is committed to making our website accessible to everyone, including people with disabilities. We are actively working to improve the accessibility and usability of our website, and we strive to follow the Web Content Accessibility Guidelines (WCAG) 2.2 Level AA as our standard."
+  }
+}
