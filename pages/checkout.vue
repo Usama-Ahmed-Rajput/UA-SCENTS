@@ -302,7 +302,6 @@ async function placeOrder() {
                 <div class="flex-1">
                   <div class="flex items-center justify-between">
                     <span class="font-medium text-sm text-ink">Cash on Delivery (COD)</span>
-                    <span class="text-[11px] font-medium uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-700">Available</span>
                   </div>
                   <p class="text-xs text-ink/60 mt-1">
                     Pay with cash upon physical delivery of your order to your doorstep.
