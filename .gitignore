@@ -5,3 +5,4 @@ node_modules
 dist
 .env.example
 .DS_Store
+supabase_schema.sql
