@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { lines, subtotal, clearCart } = useCart()
 
-const shippingCost = 0
+const shippingCost = 200
 const total = computed(() => subtotal.value + shippingCost)
 
 const placingOrder = ref(false)
@@ -348,7 +348,7 @@ async function placeOrder() {
             </div>
             <div class="flex justify-between">
               <span class="text-ink/60">Shipping</span>
-              <span class="text-xs uppercase tracking-wider text-emerald-700 font-medium">Free</span>
+              <span class="font-mono text-xs">{{ formatPrice(shippingCost) }}</span>
             </div>
             <div class="flex justify-between text-base font-medium pt-3 border-t border-line/60">
               <span>Total Amount</span>
