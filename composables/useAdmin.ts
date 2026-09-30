@@ -1,3 +1,5 @@
+import { DEFAULT_GRADIENTS } from '~/utils/gradients'
+
 export function useAdmin() {
   const supabase = useSupabaseClient()
 
@@ -343,9 +345,15 @@ export function useAdmin() {
   // ---------------------------------------------------------------------------
 
   async function fetchGradients() {
-    const { data, error } = await supabase.from('gradients').select('*').order('category')
-    if (error) throw error
-    return data || []
+    try {
+      const { data, error } = await supabase.from('gradients').select('*').order('category')
+      if (error || !data || data.length === 0) {
+        return DEFAULT_GRADIENTS
+      }
+      return data
+    } catch {
+      return DEFAULT_GRADIENTS
+    }
   }
 
   async function createGradient(payload: { name: string; css_value: string; category: string }) {
@@ -358,6 +366,17 @@ export function useAdmin() {
     const { error } = await supabase.from('gradients').delete().eq('id', id)
     if (error) throw error
     return true
+  }
+
+  async function seedDefaultGradients() {
+    const rows = DEFAULT_GRADIENTS.map((g) => ({
+      name: g.name,
+      css_value: g.css_value,
+      category: g.category
+    }))
+    const { data, error } = await supabase.from('gradients').insert(rows).select()
+    if (error) throw error
+    return data
   }
 
   // ---------------------------------------------------------------------------
@@ -401,6 +420,7 @@ export function useAdmin() {
     fetchGradients,
     createGradient,
     deleteGradient,
+    seedDefaultGradients,
     fetchDashboardStats,
     flushProductCache
   }
