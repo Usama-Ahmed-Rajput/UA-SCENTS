@@ -7,6 +7,7 @@ definePageMeta({
 })
 
 const { fetchGradients, createGradient, deleteGradient, seedDefaultGradients } = useAdmin()
+const toast = useToast()
 
 const gradientsList = ref<GradientPreset[]>([])
 const loading = ref(true)
@@ -69,7 +70,7 @@ const availableCategories = computed(() => {
 
 async function handleCreate() {
   if (!newGradient.name || !newGradient.css_value) {
-    alert('Please enter a name and CSS gradient string')
+    toast.error('Please enter a name and CSS gradient string')
     return
   }
 
@@ -83,9 +84,10 @@ async function handleCreate() {
     newGradient.name = ''
     newGradient.css_value = ''
     newGradient.category = 'Warm & Cashmere'
+    toast.success('Gradient preset created successfully!')
     await loadData()
   } catch (err: any) {
-    alert(err.message || 'Failed to create gradient preset')
+    toast.error(err.message || 'Failed to create gradient preset')
   } finally {
     isSubmitting.value = false
   }
@@ -95,9 +97,10 @@ async function handleRemove(id: string, name: string) {
   if (!confirm(`Delete gradient preset "${name}"?`)) return
   try {
     await deleteGradient(id)
+    toast.success(`Gradient preset "${name}" deleted`)
     await loadData()
   } catch (err: any) {
-    alert(err.message || 'Failed to delete gradient')
+    toast.error(err.message || 'Failed to delete gradient')
   }
 }
 
@@ -106,10 +109,10 @@ async function handleSeedDefaults() {
   isSeeding.value = true
   try {
     await seedDefaultGradients()
-    alert('Default presets successfully imported into Supabase database!')
+    toast.success('Default presets successfully imported!')
     await loadData()
   } catch (err: any) {
-    alert(err.message || 'Failed to seed presets')
+    toast.error(err.message || 'Failed to seed presets')
   } finally {
     isSeeding.value = false
   }

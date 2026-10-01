@@ -1,7 +1,9 @@
 {
   "home": {
-    "title": "UA SCENTS – Scents that take you somewhere.",
-    "description": "UA SCENTS is a world of scents that take you somewhere. Complex, rich and emotional. Familiar but new. Each scent invites new meaning through your own wear, designed inclusive of gender, identity and the things we carry. At our core is the reminder of all that connects us."
+    "title": "Scents that take you somewhere.",
+    "description": "Complex, rich and emotional. Familiar but new. Each scent invites new meaning through your own wear, designed inclusive of gender, identity and the things we carry. At our core is the reminder of all that connects us.",
+    "image": "/images/secImage.jpeg",
+    "video": "/images/UA SCENTS_BG.mp4"
   },
   "about": {
     "title": "This is UA SCENTS",

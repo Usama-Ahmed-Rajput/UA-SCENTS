@@ -9,6 +9,7 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const { fetchPageWithDetails, updatePage, saveFaqItems } = useAdmin()
+const toast = useToast()
 
 const pageId = computed(() => route.params.id as string)
 const pageData = ref<any | null>(null)
@@ -23,7 +24,7 @@ onMounted(async () => {
     faqItems.value = res.faqItems.map((fi: any) => ({ question: fi.question, answer: fi.answer }))
   } catch (err) {
     console.error(err)
-    alert('Page not found')
+    toast.error('Page not found')
     router.push('/admin/pages')
   } finally {
     loading.value = false
@@ -46,7 +47,8 @@ async function handleSave() {
     await updatePage(pageId.value, {
       title: pageData.value.title,
       description: pageData.value.description,
-      image: pageData.value.image
+      image: pageData.value.image,
+      video: pageData.value.video
     })
 
     if (pageData.value.slug === 'faq') {
@@ -54,10 +56,10 @@ async function handleSave() {
       await saveFaqItems(pageId.value, cleanFaq)
     }
 
-    alert('Page updated successfully')
+    toast.success('Page updated successfully!')
     router.push('/admin/pages')
   } catch (err: any) {
-    alert(err.message || 'Failed to save page')
+    toast.error(err.message || 'Failed to save page')
   } finally {
     saving.value = false
   }
@@ -75,7 +77,7 @@ async function handleSave() {
       <div class="flex items-center justify-between border-b border-[#272736] pb-6">
         <div>
           <h1 class="text-2xl font-semibold text-slate-100">Edit Page: /{{ pageData.slug }}</h1>
-          <p class="text-xs text-slate-400">Update page title, main content and hero graphics</p>
+          <p class="text-xs text-slate-400">Update page title, main content, background video and hero graphics</p>
         </div>
 
         <div class="flex items-center gap-3">
@@ -179,15 +181,33 @@ async function handleSave() {
           </div>
         </div>
 
-        <!-- Sidebar Options (Hero Image) -->
+        <!-- Sidebar Options (Hero Image & Video) -->
         <div class="space-y-6">
           <div class="bg-[#16161e] border border-[#272736] rounded-2xl p-6 space-y-4">
-            <h3 class="text-sm font-semibold uppercase tracking-wider text-[#e5e7eb]">Page Header Image</h3>
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-[#e5e7eb]">Hero / Header Image</h3>
             <AdminImageUpload
               v-model="pageData.image"
-              label="Hero Header Image"
+              label="Page Image"
               folder="pages"
             />
+          </div>
+
+          <div class="bg-[#16161e] border border-[#272736] rounded-2xl p-6 space-y-4">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-[#e5e7eb]">Background Video URL</h3>
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">
+                Video Path / URL (.mp4)
+              </label>
+              <input
+                v-model="pageData.video"
+                type="text"
+                placeholder="/images/UA SCENTS_BG.mp4 or https://..."
+                class="w-full bg-[#0f0f14] border border-[#323245] rounded-lg px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-[#e5e7eb]"
+              />
+              <p class="text-[11px] text-slate-500 mt-1.5 leading-normal">
+                Specify video path (e.g. <code>/images/UA SCENTS_BG.mp4</code>) or video URL to use as hero background.
+              </p>
+            </div>
           </div>
         </div>
       </div>

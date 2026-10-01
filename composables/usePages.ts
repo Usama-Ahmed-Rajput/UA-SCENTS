@@ -4,6 +4,7 @@ export interface PageData {
   title: string
   description: string
   image?: string
+  video?: string
   items?: Array<{ q: string; a: string }>
 }
 
@@ -20,7 +21,8 @@ export function usePage(slug: string): PageData {
           pageState.value = {
             title: data.title,
             description: data.description,
-            image: data.image || undefined,
+            image: data.image || fallbackPages[slug]?.image,
+            video: data.video || fallbackPages[slug]?.video,
             items: data.items || fallbackPages[slug]?.items,
           }
         }

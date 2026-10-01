@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const products = useProducts()
+const page = computed(() => usePage('home'))
 
 const fragrances = computed(() => products.value.filter((p) => p.category === 'fragrance').slice(0, 4))
 
@@ -23,7 +24,7 @@ const sets = computed(() => products.value.filter((p) => p.category !== 'fragran
     <!-- Hero -->
     <section class="relative h-[92vh] min-h-[600px] w-full overflow-hidden bg-ink">
       <video
-        src="/images/UA SCENTS_BG.mp4"
+        :src="page.video || '/images/UA SCENTS_BG.mp4'"
         autoplay
         muted
         loop
@@ -35,7 +36,7 @@ const sets = computed(() => products.value.filter((p) => p.category !== 'fragran
       <div class="relative z-10 flex h-full items-end px-6 md:px-10 py-6 md:py-8">
         <div class="max-w-2xl pb-10">
           <h1 class="font-serif text-cream text-4xl md:text-6xl lg:text-7xl leading-[1.1]">
-            Scents that take you somewhere.
+            {{ page.title || 'Scents that take you somewhere.' }}
           </h1>
         </div>
       </div>
@@ -46,8 +47,7 @@ const sets = computed(() => products.value.filter((p) => p.category !== 'fragran
       <p class="eyebrow mb-6">This is UA SCENTS</p>
 
       <h2 class="font-serif text-2xl md:text-4xl max-w-3xl mx-auto leading-snug">
-        Complex, rich and emotional. Familiar but new. Each scent invites new meaning
-        through your own wear.
+        {{ page.description || 'Complex, rich and emotional. Familiar but new. Each scent invites new meaning through your own wear.' }}
       </h2>
       <NuxtLink to="/about" class="inline-block mt-8 text-sm underline underline-offset-4">
         Read our story
@@ -74,9 +74,9 @@ const sets = computed(() => products.value.filter((p) => p.category !== 'fragran
     <!-- Editorial split -->
     <section class="relative min-h-[600px] md:min-h-[700px] flex items-start md:items-center justify-end overflow-hidden">
       <picture class="absolute inset-0 h-full w-full">
-        <source media="(min-width: 768px)" srcset="/images/secImage.jpeg" />
+        <source media="(min-width: 768px)" :srcset="page.image || '/images/secImage.jpeg'" />
         <img
-          src="/images/secImageMob.jpeg"
+          :src="page.image || '/images/secImageMob.jpeg'"
           alt="UA SCENTS editorial"
           class="h-full w-full object-cover"
         />

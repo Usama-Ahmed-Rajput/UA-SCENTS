@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AdminSidebar from '~/components/admin/AdminSidebar.vue'
+import AdminToastContainer from '~/components/admin/AdminToastContainer.vue'
 
 const sidebarOpen = ref(false)
 </script>
@@ -21,5 +22,8 @@ const sidebarOpen = ref(false)
         <slot />
       </div>
     </main>
+
+    <!-- Global Admin Toast Container -->
+    <AdminToastContainer />
   </div>
 </template>

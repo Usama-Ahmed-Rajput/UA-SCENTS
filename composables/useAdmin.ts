@@ -1,4 +1,5 @@
 import { DEFAULT_GRADIENTS } from '~/utils/gradients'
+import pagesData from '~/data/pages.json'
 
 export function useAdmin() {
   const supabase = useSupabaseClient()
@@ -268,49 +269,164 @@ export function useAdmin() {
   // PAGES & FAQ CRUD
   // ---------------------------------------------------------------------------
 
+  async function seedDefaultPages() {
+    const pagesToInsertWithVideo = Object.entries(pagesData).map(([slug, data]: [string, any]) => ({
+      slug,
+      title: data.title,
+      description: data.description || '',
+      image: data.image || null,
+      video: data.video || null,
+      updated_at: new Date().toISOString()
+    }))
+
+    let insertedPages: any[] | null = null
+
+    const res1 = await supabase
+      .from('pages')
+      .upsert(pagesToInsertWithVideo, { onConflict: 'slug' })
+      .select()
+
+    if (res1.error) {
+      const pagesToInsertWithoutVideo = pagesToInsertWithVideo.map(({ video, ...rest }) => rest)
+      const res2 = await supabase
+        .from('pages')
+        .upsert(pagesToInsertWithoutVideo, { onConflict: 'slug' })
+        .select()
+      if (res2.error) throw res2.error
+      insertedPages = res2.data
+    } else {
+      insertedPages = res1.data
+    }
+
+    const faqPage = (insertedPages || []).find((p: any) => p.slug === 'faq')
+    if (faqPage && pagesData.faq && pagesData.faq.items) {
+      const faqRows = pagesData.faq.items.map((item: any, i: number) => ({
+        page_id: faqPage.id,
+        question: item.q,
+        answer: item.a,
+        sort_order: i + 1
+      }))
+      await supabase.from('faq_items').delete().eq('page_id', faqPage.id)
+      await supabase.from('faq_items').insert(faqRows)
+    }
+
+    const { data: updatedList } = await supabase.from('pages').select('*').order('title')
+    return updatedList || insertedPages || []
+  }
+
   async function fetchAllPages() {
-    const { data, error } = await supabase.from('pages').select('*').order('title')
-    if (error) throw error
-    return data || []
+    try {
+      const { data, error } = await supabase.from('pages').select('*').order('title')
+      if (error) {
+        console.error('Error fetching pages:', error)
+      }
+      if (data && data.length > 0) {
+        return data
+      }
+      return await seedDefaultPages()
+    } catch (err) {
+      console.warn('fetchAllPages fallback triggered:', err)
+      return Object.entries(pagesData).map(([slug, data]: [string, any]) => ({
+        id: slug,
+        slug,
+        title: data.title,
+        description: data.description || '',
+        image: data.image || null,
+        video: data.video || null
+      }))
+    }
   }
 
   async function fetchPageWithDetails(id: string) {
-    const { data: page, error } = await supabase.from('pages').select('*').eq('id', id).single()
-    if (error) throw error
+    let page: any = null
+    const { data: pageById } = await supabase.from('pages').select('*').eq('id', id).maybeSingle()
+    if (pageById) {
+      page = pageById
+    } else {
+      const { data: pageBySlug } = await supabase.from('pages').select('*').eq('slug', id).maybeSingle()
+      if (pageBySlug) {
+        page = pageBySlug
+      }
+    }
+
+    if (!page) {
+      const defaultP = (pagesData as Record<string, any>)[id]
+      if (defaultP) {
+        page = {
+          id,
+          slug: id,
+          title: defaultP.title,
+          description: defaultP.description || '',
+          image: defaultP.image || null,
+          video: defaultP.video || null
+        }
+      } else {
+        throw new Error('Page not found')
+      }
+    }
 
     let faqItems: any[] = []
     if (page.slug === 'faq') {
       const { data: items } = await supabase
         .from('faq_items')
         .select('*')
-        .eq('page_id', id)
+        .eq('page_id', page.id)
         .order('sort_order', { ascending: true })
-      faqItems = items || []
+      if (items && items.length > 0) {
+        faqItems = items
+      } else if (pagesData.faq?.items) {
+        faqItems = pagesData.faq.items.map((it: any) => ({ question: it.q, answer: it.a }))
+      }
     }
 
     return { page, faqItems }
   }
 
-  async function updatePage(id: string, payload: { title: string; description: string; image?: string }) {
-    const { error } = await supabase
-      .from('pages')
-      .update({
-        title: payload.title,
-        description: payload.description,
-        image: payload.image || null,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', id)
+  async function updatePage(id: string, payload: { title: string; description: string; image?: string; video?: string }) {
+    const updateObjWithVideo = {
+      title: payload.title,
+      description: payload.description,
+      image: payload.image || null,
+      video: payload.video || null,
+      updated_at: new Date().toISOString()
+    }
 
-    if (error) throw error
+    const updateObjWithoutVideo = {
+      title: payload.title,
+      description: payload.description,
+      image: payload.image || null,
+      updated_at: new Date().toISOString()
+    }
+
+    let res = await supabase.from('pages').update(updateObjWithVideo).eq('id', id).select()
+
+    if (res.error && res.error.message?.includes('video')) {
+      res = await supabase.from('pages').update(updateObjWithoutVideo).eq('id', id).select()
+    }
+
+    if (res.error || !res.data || res.data.length === 0) {
+      let res2 = await supabase.from('pages').upsert({ slug: id, ...updateObjWithVideo }, { onConflict: 'slug' }).select()
+      if (res2.error && res2.error.message?.includes('video')) {
+        res2 = await supabase.from('pages').upsert({ slug: id, ...updateObjWithoutVideo }, { onConflict: 'slug' }).select()
+      }
+      if (res2.error) throw res2.error
+    }
+
+    await flushProductCache()
     return true
   }
 
   async function saveFaqItems(pageId: string, items: Array<{ id?: string; question: string; answer: string }>) {
-    await supabase.from('faq_items').delete().eq('page_id', pageId)
+    let targetPageId = pageId
+    if (!pageId.includes('-') || pageId.length < 20) {
+      const { data: p } = await supabase.from('pages').select('id').eq('slug', pageId).maybeSingle()
+      if (p) targetPageId = p.id
+    }
+
+    await supabase.from('faq_items').delete().eq('page_id', targetPageId)
     if (items.length) {
       const rows = items.map((item, i) => ({
-        page_id: pageId,
+        page_id: targetPageId,
         question: item.question,
         answer: item.answer,
         sort_order: i + 1
@@ -318,6 +434,8 @@ export function useAdmin() {
       const { error } = await supabase.from('faq_items').insert(rows)
       if (error) throw error
     }
+
+    await flushProductCache()
     return true
   }
 
@@ -412,6 +530,7 @@ export function useAdmin() {
     updateOrderStatus,
     deleteOrder,
     fetchAllPages,
+    seedDefaultPages,
     fetchPageWithDetails,
     updatePage,
     saveFaqItems,

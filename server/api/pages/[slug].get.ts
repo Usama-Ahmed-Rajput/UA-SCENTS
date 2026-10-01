@@ -35,6 +35,7 @@ export default defineEventHandler(async (event) => {
         title: page.title,
         description: page.description,
         image: page.image || undefined,
+        video: page.video || undefined,
         items: items,
       }
     }
